@@ -33,12 +33,15 @@ USER_ID = os.getenv('USER')
 # Get password from the environment
 PASS = os.getenv('PASS')
 
+<<<<<<< HEAD
 # ! ! ! ! ! ! ! ! ! ! ! ! #
 #      FOR TESTING        #
 # ! ! ! ! ! ! ! ! ! ! ! ! #
 # USER_ID = <your org-admin-role user ID>
 # PASS = <your org-admin-role password>
 
+=======
+>>>>>>> 14e3893 (first commit)
 # Control Hub URL, e.g. https://cloud.streamsets.com
 SCH_URL = 'https://cloud.streamsets.com'
 
