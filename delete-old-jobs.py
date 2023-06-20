@@ -107,7 +107,7 @@ for job in sch.jobs:
 print(f'Total jobs retrieved from SCH: {before_jobs}')
 
 # Count jobs for deletion
-print_header(f'Retrieving inactive jobs finished before {NUM_DAYS} days ago')
+print_header(f'Retrieving inactive jobs finished before {dt}')
 after_jobs = 0
 jobs = [job for job in sch.jobs if job.history and job.history[0].finishTime < as_of and job.status == 'INACTIVE']
 for job in jobs:
