@@ -115,7 +115,7 @@ if do_it == 'Y':
         print('Exporting Job \'' + job.job_name + '\'\n')
         export_resource(JOBS_DIR, job.job_name, data)
 else:
-    print_header('Script halted. Non jobs exported/deleted')
+    print_header('Script halted. No jobs exported/deleted')
     sys.exit(0)
 
 #Delete Jobs
