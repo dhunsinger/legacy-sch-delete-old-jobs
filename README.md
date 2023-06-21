@@ -73,38 +73,44 @@ Finished
 
 ### Example run with <code>DRY_RUN = False</code>. Note the prompt to confirm Job deletion:
 
+
+````
 % python3 delete-old-jobs.py
 
-
+--------------------------------------------------------
 Script is NOT running in DRY_RUN mode.
 Jobs marked for deletion will be exported AND deleted
-
+--------------------------------------------------------
 
 Retrieving inactive jobs finished before 2023-06-20 19:43:44.083000
 
+--------------------------------------------------------
 Jobs targeted for deletion:
-
+--------------------------------------------------------
 Job: 'Job 1'     Last Run: 2023-06-20 19:22:50<BR/>
 Job: 'Job 2'     Last Run: 2023-06-20 19:22:50<BR/>
 Job: 'Job 3'     Last Run: 2023-06-20 19:22:50<BR/>
-
+--------------------------------------------------------
 Total Number of Jobs targeted for deletion: 3
 
-
+--------------------------------------------------------
 Exporting Jobs to /Users/mark/data/clean-up-jobs/2023-06-20-19-43-45
-
+--------------------------------------------------------
 Exporting Job 'Job 1'<BR/>
 Exporting Job 'Job 2'<BR/>
 Exporting Job 'Job 3'<BR/>
 
 Do you want to delete the selected Jobs? (Y/N)?Y
 
-
+--------------------------------------------------------
 Deleting selected Jobs...
-
+--------------------------------------------------------
 Deleting Job 'Job 1'<BR/>
 Deleting Job 'Job 2'<BR/>
 Deleting Job 'Job 3'<BR/>
 
-
+--------------------------------------------------------
 Finished
+--------------------------------------------------------
+
+````
