@@ -2,8 +2,10 @@
 
 '''
 This script exports and deletes Jobs from StreamSets Control Hub 3.x
-older than a configurable number of days before now. Job must have
-INACTIVE status to be processed.
+older than a configurable number of days before now. Jobs must have
+INACTIVE status to be processed, and must have been run at least once.
+
+Note that Control Hub will automatically delete Jobs that have never been run after one year.
 
 Prerequisites:
  - Python 3.6+; Python 3.9+ preferred
@@ -12,10 +14,32 @@ Prerequisites:
    See: https://docs.streamsets.com/sdk/latest/installation.html
 
  - Username and password for a user with Organization Administrator role
+
  - To avoid including secrets in the script, export these two environment variables
    prior to running the script:
-        export USER=<your Org Admin USER ID>
+        export USER=<your Org Admin USER ID in the form user@org>
         export PASS=<your PASSWORD>
+
+ - Set the variable DRY_RUN = True to export the Jobs identified for deletion
+      without actually deleting any Jobs
+
+ - Set the variable DRY_RUN = False to export the Jobs identified for deletion
+      and to actually delete the Jobs
+
+ - Set the variable EXPORT_BASE_DIR to the directory where you want to export Jobs
+
+ - Set the variable NUM_DAYS to the number of days to consider a Job old
+
+Usage Instructions:
+
+Run the script with the variable DRY_RUN = True to print a list of Jobs that are marked for deletion.
+A DRY_RUN will also export each Job marked for deletion into a timestamped child dir within the EXPORT_BASE_DIR.
+
+After running a DRY_RUN, inspect the list of Jobs identified for deletion. Then
+try manually deleting one or two of those Jobs from Control HUb, and confirm that 
+you can importing the corresponding exported Jobs.
+
+If all goes well, then run the script again with DRY_RUN = False to actually delete the Jobs
 
 '''
 
@@ -27,7 +51,14 @@ from streamsets.sdk import ControlHub
 
 ## User Variables ##################
 
-# # Get user_id from environment
+# DRY_RUN
+# Set DRY_RUN = True to export the Jobs identified for deletion
+# without actually deleting any Jobs 
+# Set DRY_RUN = False to export the Jobs identified for deletion
+# and to actually delete the Jobs
+DRY_RUN = True
+
+# Get user_id from environment
 USER_ID = os.getenv('USER')
 
 # Get password from the environment
@@ -36,13 +67,11 @@ PASS = os.getenv('PASS')
 # Control Hub URL, e.g. https://cloud.streamsets.com
 SCH_URL = 'https://cloud.streamsets.com'
 
-# Export dir - change JOBS_DIR for multiple runs
-EXPORT_BASE_DIR = '<your-export-dir>'
-
-JOBS_DIR = 'jobs'
+# Jobs Export dir
+EXPORT_BASE_DIR = '<YOUR EXPORT DIR>'
 
 # Number of days before today to search for jobs to delete
-NUM_DAYS = 365
+NUM_DAYS = 0
 
 ## End User Variables ##############
 
@@ -55,7 +84,7 @@ sch = ControlHub(
 # print header method
 def print_header(header):
     divider = 60 * '-'
-    print('\n\n' + divider)
+    print('\n' + divider)
     print(header)
     print(divider)
 
@@ -72,7 +101,6 @@ if not os.path.exists(EXPORT_BASE_DIR):
     except Exception as err:
          print('Error creating export directory: ' + str(err))
          sys.exit(-1)
-print('\nExporting resources to ' + EXPORT_BASE_DIR)
 
 # export_resource method
 def export_resource(export_dir, resource_name, data):
@@ -81,7 +109,7 @@ def export_resource(export_dir, resource_name, data):
     resource_name = resource_name.replace('/', '_' )
 
     # Export a zip file for the resource
-    with open(EXPORT_BASE_DIR + '/' + export_dir + '/' + resource_name + '.zip', 'wb') as file:
+    with open(export_dir + '/' + resource_name + '.zip', 'wb') as file:
         file.write(data)
 
 #calculate timestamp for filtering old jobs - now minus NUM_DAYS in ms
@@ -90,43 +118,55 @@ num_to_ms = NUM_DAYS * 24 * 60 * 60 * 1000
 as_of = now - num_to_ms
 dt = datetime.datetime.fromtimestamp(as_of / 1000.0)
 
-# Count total jobs
-print_header('Retrieving all jobs from SCH')
-before_jobs = 0
-for job in sch.jobs:
-    before_jobs+=1
-print(f'Total jobs retrieved from SCH: {before_jobs}')
-
-# Count jobs for deletion
-print_header(f'Retrieving inactive jobs finished before {dt}')
-after_jobs = 0
-jobs = [job for job in sch.jobs if job.history and job.history[0].finishTime < as_of and job.status == 'INACTIVE']
-for job in jobs:
-    after_jobs += 1
-print(f'Jobs targeted for export/deletion: {after_jobs}')
-
-do_it = input('Do you want to proceed with export/deletion? (Y/N)?')
-#Export Jobs
-if do_it == 'Y':
-    print_header('Exporting Jobs')
-    mkdir(JOBS_DIR)
-    for job in jobs:
-        data = sch.export_jobs([job])
-        print('Exporting Job \'' + job.job_name + '\'\n')
-        export_resource(JOBS_DIR, job.job_name, data)
+if DRY_RUN:
+    print_header('Script is running in DRY_RUN mode.\nJobs marked for deletion will be exported only and NOT deleted')
 else:
-    print_header('Script halted. No jobs exported/deleted')
+    print_header('Script is NOT running in DRY_RUN mode.\nJobs marked for deletion will be exported AND deleted')
+
+# Get jobs for deletion
+print(f'\nRetrieving inactive jobs finished before {dt}')
+jobs = [job for job in sch.jobs if job.history and job.history[0].finishTime < as_of and job.status == 'INACTIVE']
+
+# Exit if no old Jobs found
+if jobs is None or len(jobs) == 0:
+    print('Script halted. No old Jobs found\n')
     sys.exit(0)
 
-#Delete Jobs
-if do_it == 'Y':
-    for job in jobs:
-        data = sch.delete_job(job)
-        print('Deleting Job \'' + job.job_name + '\'\n')
+# Print list of Jobs marked for deletion
+print(f'\nJobs targeted for deletion:')
+print(60 * '-')
+for job in jobs:
+    last_run_finish_time = datetime.datetime.fromtimestamp(job.history[0].finishTime/1000.0)
+    print('Job: \'' + job.job_name + '\'     Last Run: ' + last_run_finish_time.strftime("%Y-%m-%d %H:%M:%S") )
+print(60 * '-')
+print(f'Total Number of Jobs targeted for deletion: {len(jobs)}')
+
+# Create export dir based on current timestamp
+export_dir = EXPORT_BASE_DIR + '/' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
+
+# Export Jobs marked for deletion
+print_header('Exporting Jobs to ' + export_dir)
+mkdir(export_dir)
+for job in jobs:
+    data = sch.export_jobs([job])
+    print('Exporting Job \'' + job.job_name + '\'')
+    export_resource(export_dir, job.job_name, data)
+
+# If not a DRY_RUN, delete the selected Jobs
+if not DRY_RUN:
+    do_it = input('\nDo you want to delete the selected Jobs? (Y/N)?')
+    #Delete Jobs
+    if do_it == 'Y':
+        print_header('Deleting selected Jobs...')
+        for job in jobs:
+            try:
+                print('Deleting Job \'' + job.job_name + '\'')
+                sch.delete_job(job)
+            except Exception as e:
+                print(f"An exception occurred while trying to delete the Job {job.job_name}") 
+                print('The script will exit without trying to delete any more Jobs')
+                sys.exit(-1)
+    else:
+        print('\nScript aborted; no Jobs deleted')
+
 print_header('Finished')
-
-
-
-
-
-
