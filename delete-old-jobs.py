@@ -71,7 +71,7 @@ SCH_URL = 'https://cloud.streamsets.com'
 EXPORT_BASE_DIR = '<YOUR EXPORT DIR>'
 
 # Number of days before today to search for jobs to delete
-NUM_DAYS = 0
+NUM_DAYS = 365
 
 ## End User Variables ##############
 
