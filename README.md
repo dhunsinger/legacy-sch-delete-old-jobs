@@ -44,32 +44,36 @@ If all goes well, then run the script again with DRY_RUN = False to actually del
 Here is example console output from runs of the script in both modes:
 
 ### Example run with <code>DRY_RUN = True</code>
-
+````
 % python3 delete-old-jobs.py
 
+--------------------------------------------------------
 Script is running in DRY_RUN mode.
 Jobs marked for deletion will be exported only and NOT deleted
+--------------------------------------------------------
 
 Retrieving inactive jobs finished before 2022-06-20 19:33:26.481000
 
+--------------------------------------------------------
 Jobs targeted for deletion:
-
+--------------------------------------------------------
 Job: 'Job 1'     Last Run: 2022-06-20 19:22:50<BR/>
 Job: 'Job 2'     Last Run: 2022-06-20 19:22:50<BR/>
 Job: 'Job 3'     Last Run: 2022-06-20 19:22:50<BR/>
-
+--------------------------------------------------------
 Total Number of Jobs targeted for deletion: 3
 
-
+--------------------------------------------------------
 Exporting Jobs to /Users/mark/data/clean-up-jobs/2023-06-20-19-33-27
-
+--------------------------------------------------------
 Exporting Job 'Job 1'<BR/>
 Exporting Job 'Job 2'<BR/>
 Exporting Job 'Job 3'<BR/>
 
-
+--------------------------------------------------------
 Finished
-
+--------------------------------------------------------
+````
 
 ### Example run with <code>DRY_RUN = False</code>. Note the prompt to confirm Job deletion:
 
@@ -82,14 +86,14 @@ Script is NOT running in DRY_RUN mode.
 Jobs marked for deletion will be exported AND deleted
 --------------------------------------------------------
 
-Retrieving inactive jobs finished before 2023-06-20 19:43:44.083000
+Retrieving inactive jobs finished before 2022-06-20 19:43:44.083000
 
 --------------------------------------------------------
 Jobs targeted for deletion:
 --------------------------------------------------------
-Job: 'Job 1'     Last Run: 2023-06-20 19:22:50<BR/>
-Job: 'Job 2'     Last Run: 2023-06-20 19:22:50<BR/>
-Job: 'Job 3'     Last Run: 2023-06-20 19:22:50<BR/>
+Job: 'Job 1'     Last Run: 2022-06-20 19:22:50<BR/>
+Job: 'Job 2'     Last Run: 2022-06-20 19:22:50<BR/>
+Job: 'Job 3'     Last Run: 2022-06-20 19:22:50<BR/>
 --------------------------------------------------------
 Total Number of Jobs targeted for deletion: 3
 
