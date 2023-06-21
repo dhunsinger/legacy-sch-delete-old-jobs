@@ -164,6 +164,7 @@ if not DRY_RUN:
                 sch.delete_job(job)
             except Exception as e:
                 print(f"An exception occurred while trying to delete the Job {job.job_name}") 
+                print(str(e)) 
                 print('The script will exit without trying to delete any more Jobs')
                 sys.exit(-1)
     else:
