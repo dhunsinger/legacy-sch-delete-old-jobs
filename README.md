@@ -57,18 +57,18 @@ Retrieving inactive jobs finished before 2022-06-20 19:33:26.481000
 --------------------------------------------------------
 Jobs targeted for deletion:
 --------------------------------------------------------
-Job: 'Job 1'     Last Run: 2022-06-20 19:22:50<BR/>
-Job: 'Job 2'     Last Run: 2022-06-20 19:22:50<BR/>
-Job: 'Job 3'     Last Run: 2022-06-20 19:22:50<BR/>
+Job: 'Job 1'     Last Run: 2022-06-20 19:22:50
+Job: 'Job 2'     Last Run: 2022-06-20 19:22:50
+Job: 'Job 3'     Last Run: 2022-06-20 19:22:50
 --------------------------------------------------------
 Total Number of Jobs targeted for deletion: 3
 
 --------------------------------------------------------
 Exporting Jobs to /Users/mark/data/clean-up-jobs/2023-06-20-19-33-27
 --------------------------------------------------------
-Exporting Job 'Job 1'<BR/>
-Exporting Job 'Job 2'<BR/>
-Exporting Job 'Job 3'<BR/>
+Exporting Job 'Job 1'
+Exporting Job 'Job 2'
+Exporting Job 'Job 3'
 
 --------------------------------------------------------
 Finished
@@ -91,27 +91,27 @@ Retrieving inactive jobs finished before 2022-06-20 19:43:44.083000
 --------------------------------------------------------
 Jobs targeted for deletion:
 --------------------------------------------------------
-Job: 'Job 1'     Last Run: 2022-06-20 19:22:50<BR/>
-Job: 'Job 2'     Last Run: 2022-06-20 19:22:50<BR/>
-Job: 'Job 3'     Last Run: 2022-06-20 19:22:50<BR/>
+Job: 'Job 1'     Last Run: 2022-06-20 19:22:50
+Job: 'Job 2'     Last Run: 2022-06-20 19:22:50
+Job: 'Job 3'     Last Run: 2022-06-20 19:22:50
 --------------------------------------------------------
 Total Number of Jobs targeted for deletion: 3
 
 --------------------------------------------------------
 Exporting Jobs to /Users/mark/data/clean-up-jobs/2023-06-20-19-43-45
 --------------------------------------------------------
-Exporting Job 'Job 1'<BR/>
-Exporting Job 'Job 2'<BR/>
-Exporting Job 'Job 3'<BR/>
+Exporting Job 'Job 1'
+Exporting Job 'Job 2'
+Exporting Job 'Job 3'
 
 Do you want to delete the selected Jobs? (Y/N)?Y
 
 --------------------------------------------------------
 Deleting selected Jobs...
 --------------------------------------------------------
-Deleting Job 'Job 1'<BR/>
-Deleting Job 'Job 2'<BR/>
-Deleting Job 'Job 3'<BR/>
+Deleting Job 'Job 1'
+Deleting Job 'Job 2'
+Deleting Job 'Job 3'
 
 --------------------------------------------------------
 Finished
