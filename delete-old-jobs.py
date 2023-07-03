@@ -30,6 +30,11 @@ Prerequisites:
 
  - Set the variable NUM_DAYS to the number of days to consider a Job old
 
+ - Set the variable LABEL to define job Data Collector Label used to mark old jobs
+   for deletion. If a job is old enough, but not labeled, it will not be deleted.
+   Setting a job's data collector label without matching SDC labels
+   will also ensure the jobs do not execute before deletion.
+
 Usage Instructions:
 
 Run the script with the variable DRY_RUN = True to print a list of Jobs that are marked for deletion.
@@ -72,6 +77,9 @@ EXPORT_BASE_DIR = '<YOUR EXPORT DIR>'
 
 # Number of days before today to search for jobs to delete
 NUM_DAYS = 365
+
+# SDC Label to identify old jobs to delete
+LABEL = 'delete'
 
 ## End User Variables ##############
 
@@ -124,22 +132,25 @@ else:
     print_header('Script is NOT running in DRY_RUN mode.\nJobs marked for deletion will be exported AND deleted')
 
 # Get jobs for deletion
-print(f'\nRetrieving inactive jobs finished before {dt}')
+print(f'\nRetrieving inactive jobs finished before {dt}\ncontaining label \"{LABEL}\"')
 jobs = [job for job in sch.jobs if job.history and job.history[0].finishTime < as_of and job.status == 'INACTIVE']
-
+filtered_jobs = []
+for job in jobs:
+    if LABEL in job.data_collector_labels:
+        filtered_jobs.append(job)
 # Exit if no old Jobs found
-if jobs is None or len(jobs) == 0:
+if filtered_jobs is None or len(filtered_jobs) == 0:
     print('Script halted. No old Jobs found\n')
     sys.exit(0)
 
 # Print list of Jobs marked for deletion
 print(f'\nJobs targeted for deletion:')
 print(60 * '-')
-for job in jobs:
+for job in filtered_jobs:
     last_run_finish_time = datetime.datetime.fromtimestamp(job.history[0].finishTime/1000.0)
     print('Job: \'' + job.job_name + '\'     Last Run: ' + last_run_finish_time.strftime("%Y-%m-%d %H:%M:%S") )
 print(60 * '-')
-print(f'Total Number of Jobs targeted for deletion: {len(jobs)}')
+print(f'Total Number of Jobs targeted for deletion: {len(filtered_jobs)}')
 
 # Create export dir based on current timestamp
 export_dir = EXPORT_BASE_DIR + '/' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
@@ -147,7 +158,7 @@ export_dir = EXPORT_BASE_DIR + '/' + datetime.datetime.now().strftime("%Y-%m-%d-
 # Export Jobs marked for deletion
 print_header('Exporting Jobs to ' + export_dir)
 mkdir(export_dir)
-for job in jobs:
+for job in filtered_jobs:
     data = sch.export_jobs([job])
     print('Exporting Job \'' + job.job_name + '\'')
     export_resource(export_dir, job.job_name, data)
@@ -158,7 +169,7 @@ if not DRY_RUN:
     #Delete Jobs
     if do_it == 'Y':
         print_header('Deleting selected Jobs...')
-        for job in jobs:
+        for job in filtered_jobs:
             try:
                 print('Deleting Job \'' + job.job_name + '\'')
                 sch.delete_job(job)
